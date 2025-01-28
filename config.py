@@ -10,13 +10,13 @@ class Config(object):
     #telegram user session str for 4gb limit
     SESSION_STRING = os.environ.get("SESSION_STRING", "BQGlVqIAaQCW7onbtdCbesyxExwOHWBZeA-bYLODgc95BpZSiHbwqGA0CC8_9EDtVxhSjDnAlLRGO3wM-oFp4CGEWCIn1Q996Xz4jCAlXPbc4eHRI06yRuuE3K_rd1uuBoL2IrdDaOA3447-dwVkdWRhH2yYrisu0NhFPEX4tXORVGhAw6NJSv5wjZ1-wzsRZZFHpTsCPSr8RybxCOWYiBZUpjNc1JPkNBPgr1KU4XOQbvjU")
     #tg bot token
-    BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+    BOT_TOKEN = os.environ.get("BOT_TOKEN", "7038431984:AAFSeO4WZkunT9P3-OeIaN_ukJp2xMaQWnw")
     #api id and hash get it from my.telegram.org
     API_ID = int(os.environ.get("API_ID", 27190467))
     API_HASH = os.environ.get("API_HASH", "ff6bc6ad2faba520f426cf04ca7f5773")
     PROXY = os.environ.get("PROXY", "")
     DB_URL = os.environ.get("DB_URL", "?retryWrites=true&w=majority&appName=Cluster0")
-    OWNER_ID = [int(i) for i in  os.environ.get("OWNER_ID", "7126874550").split(" ")]
+    OWNER_ID = [int(i) for i in  os.environ.get("OWNER_ID", "6066102279").split(" ")]
     #log channel, where to send logs
     LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", ""))
     #gdrive folder id for upload
