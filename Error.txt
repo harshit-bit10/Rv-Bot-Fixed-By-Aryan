@@ -1,0 +1,37 @@
+The error message is telling you that the titlecase module is not installed. You previously tried to install it, but it failed due to missing dependencies. Let's fix it.
+
+✅ Step 1: Install python3.10-venv
+You need to install the python3.10-venv package to be able to create a virtual environment.
+
+bash
+Copy code
+sudo apt install python3.10-venv
+✅ Step 2: Create a Virtual Environment
+Now, create a virtual environment inside your project folder.
+
+bash
+Copy code
+python3 -m venv myenv
+✅ Step 3: Activate the Virtual Environment
+Activate the environment with:
+
+bash
+Copy code
+source myenv/bin/activate
+You should see (myenv) at the beginning of your terminal prompt.
+
+✅ Step 4: Upgrade pip, setuptools, and wheel (Inside Virtual Environment)
+bash
+Copy code
+pip install --upgrade pip setuptools setuptools_scm wheel
+✅ Step 5: Install titlecase (Inside Virtual Environment)
+bash
+Copy code
+pip install titlecase
+✅ Step 6: Run your script (Inside Virtual Environment)
+bash
+Copy code
+python3 bot.py
+This setup ensures that all packages are installed properly within a virtual environment, avoiding conflicts with system packages.
+
+Do you want me to help you make sure your bot is working properly? 😊
