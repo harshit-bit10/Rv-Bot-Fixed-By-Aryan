@@ -18,7 +18,7 @@ class Config(object):
     DB_URL = os.environ.get("DB_URL", "mongodb+srv://hello:hello@cluster0.vc2htx0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
     OWNER_ID = [int(i) for i in  os.environ.get("OWNER_ID", "6066102279").split(" ")]
     #log channel, where to send logs
-    LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1002368843413")
+    LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1002368843413"))
     #gdrive folder id for upload
     GDRIVE_FOLDER_ID = os.environ.get("GDRIVE_FOLDER_ID", "1Od-lqyy8qw0fR_D0E6R4Q71oplNhZPaw")
     #use service accounts or not, used to bypass daily upload limit
