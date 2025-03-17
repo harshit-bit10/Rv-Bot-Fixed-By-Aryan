@@ -74,7 +74,7 @@ import xmltodict
 import titlecase
 import unidecode
 import itertools
-from pywidevine.decrypt.wvdecrypt import WvDecrypt
+
 import hashlib
 import base64
 import hmac
@@ -82,8 +82,7 @@ import datetime
 import re
 import subprocess
 import binascii
-from pywidevine.decrypt.wvdecryptcustom import WvDecrypt as WvDecryptCustom
-from pywidevine.cdm import deviceconfig
+
 from jvdb import mydb
 __version__ = 'v1.5.0'
 
@@ -209,6 +208,7 @@ class JioCinema3423:
         self.COUNT_VIDEOS = 0
         self.SINGLE = None
         self.proxies = {} if Config.PROXY == '' else {'https': Config.PROXY}
+        self.proxi = '' if Config.PROXY == '' else Config.PROXY
         self.session = requests.Session()
         self.session.proxies.update(self.proxies)
         self.ExtractUrl()
@@ -534,6 +534,7 @@ class HotStar:
         self.raw = ''
         self.id = mess
         self.proxies = {} if Config.PROXY == '' else {'https': Config.PROXY}
+        self.proxi = '' if Config.PROXY == '' else Config.PROXY
         self.session = requests.Session()
         self.session.proxies.update(self.proxies)
         self.xcodec = xcodec
@@ -566,18 +567,19 @@ class HotStar:
             os.makedirs(self.filedir)
         self.data = {}
         self.year = ''
-        self.generateDeviceID()
-        self.UpdateUserData()
-        self.license_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36', 'Accept': '*/*', 'Accept-Language': 'en-US,en;q=0.5', 'Referer': 'https://www.hotstar.com/', 'Origin': 'https://www.hotstar.com', 'DNT': '1', 'Connection': 'keep-alive', 'TE': 'Trailers'}
-        self.hotstarPlaybackURL = 'https://api.hotstar.com/device-id={userDeviceID}&desired-config=audio_channel:dolby51|encryption:widevine|ladder:tv|package:dash|resolution:4k|subs-tag:HotstarPremium|video_codec:vp9&os-name=Android&os-version=8'
-        self.hotstarMovieInfoURL = 'https://api.hotstar.com/oao=0&tas=20&contentId={contentID}'
-        self.hotstarShowInfoURL = 'https://api.hotstar.com/show/detail?tao=0&tas=20&contentId={contentID}'
-        self.hotstarSeasonInfoURL = 'https://api.hotstar.com/detail?tao=0&tas=20&size=5000&id={seasonID}'
+        self.ini = None
+#        self.generateDeviceID()
+ #       self.UpdateUserData()
+  #      self.license_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36', 'Accept': '*/*', 'Accept-Language': 'en-US,en;q=0.5', 'Referer': 'https://www.hotstar.com/', 'Origin': 'https://www.hotstar.com', 'DNT': '1', 'Connection': 'keep-alive', 'TE': 'Trailers'}
+   #     self.hotstarPlaybackURL = 'https://api.hotstar.com/device-id={userDeviceID}&desired-config=audio_channel:dolby51|encryption:widevine|ladder:tv|package:dash|resolution:4k|subs-tag:HotstarPremium|video_codec:vp9&os-name=Android&os-version=8'
+    #    self.hotstarMovieInfoURL = 'https://api.hotstar.com/oao=0&tas=20&contentId={contentID}'
+     #   self.hotstarShowInfoURL = 'https://api.hotstar.com/show/detail?tao=0&tas=20&contentId={contentID}'
+      #  self.hotstarSeasonInfoURL = 'https://api.hotstar.com/detail?tao=0&tas=20&size=5000&id={seasonID}'
         self.url = mainUrl
-        self.HEADERS1 = {'authority': 'www.hotstar.com', 'accept': 'application/json, text/plain, */*', 'accept-language': 'eng', 'baggage': 'sentry-environment=prod,sentry-release=23.10.16.3-2023-10-19T05%3A14%3A54,sentry-transaction=%2F%5B%5B...slug%5D%5D,sentry-public_key=d32fd9e4889d4669b234f07d232a697f,sentry-trace_id=3afef9264f9f40fbbd320943c65ffe9e,sentry-sample_rate=0', 'cache-control': 'no-cache', 'content-type': 'application/json', 'origin': 'https://www.hotstar.com', 'pragma': 'no-cache', 'referer': 'https://www.hotstar.com/in/shows/loki/1260063451?filters=content_type%3Dshow_clips', 'sec-ch-ua': '\"Chromium\";v=\"118\", \"Google Chrome\";v=\"118\", \"Not=A?Brand\";v=\"99\"', 'sec-ch-ua-mobile': '?0', 'sec-ch-ua-platform': '\"Windows\"', 'sec-fetch-dest': 'empty', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-origin', 'sentry-trace': '3afef9264f9f40fbbd320943c65ffe9e-8d52b52b05b5b7a6-0', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36', 'x-country-code': 'in', 'x-hs-accept-language':'eng','x-hs-client':'platform:firetv;app_version:7.41.0;browser:Chrome;scheme;schema_version:0.0.911', 'x-hs-client-targeting':'ad_id:cb78c6c0-9234-4a1b-a18f-f685afc1705e;user_lat:false', 'x-hs-device-id': Config.HOTSTAR_DEVICE_ID, 'x-hs-platform':'web','x-hs-usertoken': Config.HOTSTAR_USER_TOKEN, 'x-request-id':'1452567'}
-        self.COOKIES = {'device_id': Config.HOTSTAR_DEVICE_ID, 'hs_uid': Config.HOTSTAR_DEVICE_ID, 'userLocale': 'eng', 'ajs_group_id': 'null', 'ajs_user_id': '%22cb45c780d2884147a39f6140b3a22b49%22', 'ajs_anonymous_id': '%2205ceb57a-62ea-469d-91f7-9b2105771713%22', 'x_migration_exp': 'true', 'SELECTED__LANGUAGE': 'eng', 'deviceId': Config.HOTSTAR_DEVICE_ID, 'userCountryCode': 'in', '_gcl_au': '1.1.1337394325.1694078636', '_fbp': 'fb.1.1696356044525.311534359', '_ga_VJTFGHZ5NH': 'GS1.2.1696354438.31.1.1696356892.56.0.0', 'userHID': 'edf112b6d22e47288fdede401488e8c8', 'userPID': '75d10f2607bf48b4b5300a1396e7cb02', '_ga': 'GA1.1.1730233636.1678019100', '_uetsid': 'b9823d50718111ee9a76bbf032a61343', '_uetvid':'bf716ff0bb5011ed97134b1236d93e24', 'userUP':Config.HOTSTAR_USER_TOKEN, '_ga_EPJ8DYH89Z': 'GS1.1.1698051247.54.1.1698052065.60.0.0', '_ga_2PV8LWETCX':'GS1.1.1698051247.54.1.1698052065.60.0.0', 'AK_SERVER_TIME': f'{int(time.time())}'}
-        self.headers = {'User-Agent': 'Hotstar;in.startv.hotstar/3.3.0 (Android/8.1.0)', 'hotstarauth': self.auth()[0], 'X-Country-Code': 'in', 'X-HS-AppVersion': '3.3.0', 'X-HS-Platform': 'firetv', 'X-HS-UserToken': Config.HOTSTAR_USER_TOKEN, 'Cookie': self.auth()[1]}
-        self.infoHeaders = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0', 'Accept': '*/*', 'Accept-Language': 'eng', 'Referer': 'https://www.hotstar.com/', 'x-country-code': 'IN', 'x-platform-code': 'PCTV', 'x-client-code': 'LR', 'hotstarauth': self.auth()[0], 'x-region-code': 'DL', 'x-hs-usertoken': Config.HOTSTAR_USER_TOKEN, 'Origin': 'https://www.hotstar.com', 'DNT': '1', 'Connection': 'keep-alive', 'TE': 'Trailers'}
+        #self.HEADERS1 = {'authority': 'www.hotstar.com', 'accept': 'application/json, text/plain, */*', 'accept-language': 'eng', 'baggage': 'sentry-environment=prod,sentry-release=23.10.16.3-2023-10-19T05%3A14%3A54,sentry-transaction=%2F%5B%5B...slug%5D%5D,sentry-public_key=d32fd9e4889d4669b234f07d232a697f,sentry-trace_id=3afef9264f9f40fbbd320943c65ffe9e,sentry-sample_rate=0', 'cache-control': 'no-cache', 'content-type': 'application/json', 'origin': 'https://www.hotstar.com', 'pragma': 'no-cache', 'referer': 'https://www.hotstar.com/in/shows/loki/1260063451?filters=content_type%3Dshow_clips', 'sec-ch-ua': '\"Chromium\";v=\"118\", \"Google Chrome\";v=\"118\", \"Not=A?Brand\";v=\"99\"', 'sec-ch-ua-mobile': '?0', 'sec-ch-ua-platform': '\"Windows\"', 'sec-fetch-dest': 'empty', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-origin', 'sentry-trace': '3afef9264f9f40fbbd320943c65ffe9e-8d52b52b05b5b7a6-0', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36', 'x-country-code': 'in', 'x-hs-accept-language':'eng','x-hs-client':'platform:firetv;app_version:7.41.0;browser:Chrome;scheme;schema_version:0.0.911', 'x-hs-client-targeting':'ad_id:cb78c6c0-9234-4a1b-a18f-f685afc1705e;user_lat:false', 'x-hs-device-id': Config.HOTSTAR_DEVICE_ID, 'x-hs-platform':'web','x-hs-usertoken': Config.HOTSTAR_USER_TOKEN, 'x-request-id':'1452567'}
+       # self.COOKIES = {'device_id': Config.HOTSTAR_DEVICE_ID, 'hs_uid': Config.HOTSTAR_DEVICE_ID, 'userLocale': 'eng', 'ajs_group_id': 'null', 'ajs_user_id': '%22cb45c780d2884147a39f6140b3a22b49%22', 'ajs_anonymous_id': '%2205ceb57a-62ea-469d-91f7-9b2105771713%22', 'x_migration_exp': 'true', 'SELECTED__LANGUAGE': 'eng', 'deviceId': Config.HOTSTAR_DEVICE_ID, 'userCountryCode': 'in', '_gcl_au': '1.1.1337394325.1694078636', '_fbp': 'fb.1.1696356044525.311534359', '_ga_VJTFGHZ5NH': 'GS1.2.1696354438.31.1.1696356892.56.0.0', 'userHID': 'edf112b6d22e47288fdede401488e8c8', 'userPID': '75d10f2607bf48b4b5300a1396e7cb02', '_ga': 'GA1.1.1730233636.1678019100', '_uetsid': 'b9823d50718111ee9a76bbf032a61343', '_uetvid':'bf716ff0bb5011ed97134b1236d93e24', 'userUP':Config.HOTSTAR_USER_TOKEN, '_ga_EPJ8DYH89Z': 'GS1.1.1698051247.54.1.1698052065.60.0.0', '_ga_2PV8LWETCX':'GS1.1.1698051247.54.1.1698052065.60.0.0', 'AK_SERVER_TIME': f'{int(time.time())}'}
+#        self.headers = {'User-Agent': 'Hotstar;in.startv.hotstar/3.3.0 (Android/8.1.0)', 'hotstarauth': self.auth()[0], 'X-Country-Code': 'in', 'X-HS-AppVersion': '3.3.0', 'X-HS-Platform': 'firetv', 'X-HS-UserToken': Config.HOTSTAR_USER_TOKEN, 'Cookie': self.auth()[1]}
+ #       self.infoHeaders = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0', 'Accept': '*/*', 'Accept-Language': 'eng', 'Referer': 'https://www.hotstar.com/', 'x-country-code': 'IN', 'x-platform-code': 'PCTV', 'x-client-code': 'LR', 'hotstarauth': self.auth()[0], 'x-region-code': 'DL', 'x-hs-usertoken': Config.HOTSTAR_USER_TOKEN, 'Origin': 'https://www.hotstar.com', 'DNT': '1', 'Connection': 'keep-alive', 'TE': 'Trailers'}
 
     def ExtractUrl(self):
         self.raw = self.raw.split(':', 1)
@@ -691,11 +693,13 @@ class HotStar:
     def fix_id_ytdl(self, ytid):
         return ytid.replace('/', '_')
 
+    
     async def parse_m3u8(self, m3u8):
-        """It will extract all the data from link"""  # inserted
-        try:
-            yt_data = ytdl.YoutubeDL({'no-playlist': True, 'geo_bypass_country': 'IN', 'allow_unplayable_formats': True}).extract_info(m3u8, download=False)
+        
+        
+            yt_data = ytdl.YoutubeDL({'no-playlist': True, 'geo_bypass_country': 'IN', 'allow_unplayable_formats': True,'proxy':self.proxi}).extract_info(m3u8, download=False)
             formats = yt_data.get('formats', None)
+            
             data = {}
             data['videos'] = []
             data['audios'] = []
@@ -703,7 +707,7 @@ class HotStar:
             data['subtitles'] = []
             if formats:
                 for i in formats:
-                    format_id = i.get('format_id', '')
+                    format_id = i.get('format_id')
                     format = i.get('format', '')
                     if 'audio' in format or i.get('audio_ext', 'None') not in ['None', None, 'none', '']:
                         data['audios'].append({'lang': i.get('language', 'default') + f" ({int(i.get('tbr', 56) if i.get('tbr')!= None else 128)}kbps)", 'id': format_id})
@@ -714,11 +718,70 @@ class HotStar:
             else:  # inserted
                 raise Exception('Error in getting data')
                 return data
-        except Exception as e:
-            raise Exception(e)
- #   import json
-#    import xmltodict
+            return data
+        
+    
 
+    
+    import json
+    import xmltodict
+    async def extract_drm_info(self, manifest_path):
+            xml_string = manifest_path
+            try:
+                mpd_dict = xmltodict.parse(xml_string)
+            except Exception as e:
+                logging.error(f"Error parsing MPD: {e}")
+                return {}
+
+            drm_info = {}
+            pssh_kid = {}
+
+            async def extract_kid_pssh(adaptation_set):
+                    kid = None
+                    pssh = None
+                    if 'ContentProtection' in adaptation_set:
+                        print("found")
+                        for protection in adaptation_set['ContentProtection']:
+                            if protection.get('@schemeIdUri') == 'urn:mpeg:dash:mp4protection:2011':
+                                kid = protection.get('@cenc:default_KID').strip('"').replace('-', '').lower()
+                            if protection.get('@schemeIdUri') == 'urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed':
+                                pssh = protection.get('cenc:pssh').strip('"')
+#                            kid_match = re.search(r'cenc:default_KID="(.*)"', str(adaptation_set))
+ #                           print(adaptation_set)
+  # #                         if kid_match:
+   #                                 kid = kid_match.group(1)
+
+     #                       pssh_match = re.search(r'<cenc:pssh>(.*)</cenc:pssh>' , str(adaptation_set), re.DOTALL)
+      #                      if pssh_match:
+       #                             pssh = pssh_match.group(1)
+
+                    return kid, pssh
+            i = 0
+            if 'MPD' in mpd_dict and 'Period' in mpd_dict['MPD']:
+                for adaptation_set in mpd_dict['MPD']['Period'].get('AdaptationSet', []):
+                    if adaptation_set.get('@mimeType') in ['video/mp4', 'audio/mp4'] or adaptation_set.get('@contentType') in ['video', 'audio']:
+                        if 'Representation' in adaptation_set:
+                            for representation in adaptation_set['Representation']:
+                                kid, pssh = await extract_kid_pssh(representation)
+                                format_id = representation.get('@id', '').strip('"').replace('/', '_')
+                                if pssh and kid:
+                                  if pssh not in pssh_kid:
+                                    pssh_kid[pssh] = set()
+                                  pssh_kid[pssh].add(kid)
+                                else:
+                                  i = 1
+                                  kid, pssh = await extract_kid_pssh(adaptation_set)
+                                  if pssh and kid:
+                                    if pssh not in pssh_kid:
+                                      pssh_kid[pssh] = set()
+                                    pssh_kid[pssh].add(kid)
+                                drm_info[format_id] = {
+                                    "kid": kid,
+                                    "pssh": pssh
+                                }
+            drm_info["pssh"] = pssh_kid
+            print(drm_info)
+            return drm_info
     async def parsempd(self, MpdUrl,msg=None):
       if '.mpd' not in MpdUrl or '.m3u8' in MpdUrl:
             return await self.parse_m3u8(MpdUrl)
@@ -759,46 +822,61 @@ class HotStar:
     
       for period in root.findall('.//{urn:mpeg:dash:schema:mpd:2011}Period'):
         for adaptation_set in period.findall('.//{urn:mpeg:dash:schema:mpd:2011}AdaptationSet'):
-            if adaptation_set.attrib['mimeType'] == 'video/mp4':
+            if adaptation_set.attrib.get('mimeType','') == 'video/mp4' or adaptation_set.attrib.get('contentType','') == 'video/mp4':
                 for representation in adaptation_set.findall('.//{urn:mpeg:dash:schema:mpd:2011}Representation'):
+                    kid = ''
+                    for content_protection in adaptation_set.findall('.//{urn:mpeg:dash:schema:mpd:2011}ContentProtection'):
+                      if content_protection is not None and content_protection.attrib.get('schemeIdUri') == 'urn:mpeg:dash:mp4protection:2011':
+                        kid = content_protection.attrib.get('cenc:default_KID', '')
+                      
                     video_dict = {
-                        'width': representation.attrib['width'],
-                        'height': representation.attrib['height'],
+                        'width': representation.attrib.get('width',''),
+                        'height': representation.attrib.get('height',''),
                         'id': representation.attrib['id'],
-                        'codec': representation.attrib['codecs'],
-                        'bandwidth': representation.attrib['bandwidth']
+                        'codec': representation.attrib.get('codecs',''),
+                        'bandwidth': representation.attrib.get('bandwidth',''),
+                        'kid': kid
                     }
                     video_list.append(video_dict)
-            elif adaptation_set.attrib['mimeType'] == 'audio/mp4':
+            elif adaptation_set.attrib.get('mimeType','') == 'audio/mp4' or adaptation_set.attrib.get('contentType','') == 'audio/mp4':
                 for representation in adaptation_set.findall('.//{urn:mpeg:dash:schema:mpd:2011}Representation'):
+                    kid = ''
+                    for content_protection in adaptation_set.findall('.//{urn:mpeg:dash:schema:mpd:2011}ContentProtection'):
+                      if content_protection is not None and content_protection.attrib.get('schemeIdUri') == 'urn:mpeg:dash:mp4protection:2011':
+                        kid = content_protection.attrib.get('cenc:default_KID', '')
                     audio_dict = {
                         'id': representation.attrib['id'],
-                        'codec': representation.attrib['codecs'],
-                        'bandwidth': representation.attrib['bandwidth'],
-                        'lang': adaptation_set.attrib.get('lang', '')
+                        'codec': representation.attrib.get('codecs',''),
+                        'bandwidth': representation.attrib.get('bandwidth',''),
+                        'lang': adaptation_set.attrib.get('lang', ''),
+                        'kid': kid
                     }
                     audio_list.append(audio_dict)
             elif adaptation_set.attrib['mimeType'] == 'text/vtt':
                 for representation in adaptation_set.findall('.//{urn:mpeg:dash:schema:mpd:2011}Representation'):
                     subtitle_dict = {
-                        'lang': representation.attrib['lang'],
-                        'id': representation.attrib['id']
+                        'lang': representation.attrib.get('lang'),
+                        'id': representation.attrib.get('id')
                     }
                     subtitle_list.append(subtitle_dict)
             for content_protection in adaptation_set.findall('.//{urn:mpeg:dash:schema:mpd:2011}ContentProtection'):
-                if content_protection.attrib['schemeIdUri'] == 'urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed':
+                if content_protection.attrib.get('schemeIdUri','') == 'urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed':
                     pssh_element = content_protection.find('.//{urn:mpeg:cenc:2013}pssh')
                     if pssh_element is not None:
                         pssh = pssh_element.text
+                        print(pssh)
       video_list.sort(key=lambda x: int(x['bandwidth']))
       audio_list.sort(key=lambda x: int(x['bandwidth']))
 #      return video_list, audio_list, subtitle_list, pssh
-      return {
+      self.ini = await self.extract_drm_info(mpd)
+      print(video_list)
+      mpda = {
             'videos': video_list,
             'audios': audio_list,
             'subtitles': subtitle_list,
             'pssh': pssh
         }
+      return mpda
 
 
 
@@ -981,7 +1059,7 @@ class HotStar:
             headers = {'url':self.url,'api':'ottapi'}
             api_url = f'https://www.hotstar.com/api/internal/bff/v2/slugs{slug}/a/{contentID}/watch'
 #            response = self.session.get(api_url, params=params, cookies=self.COOKIES, headers=self.HEADERS1).json()
-            response = requests.get(url=f"https://hls-proxifier-sage.vercel.app/hotstar?type={type}", headers=headers).json()
+            response = requests.get(url=f"https://subscription-api-hs.vercel.app/hotstar?type={type}", headers=headers).json()
  
         except:
             pass
@@ -1045,28 +1123,34 @@ class HotStar:
                 OUTPUT = os.path.join(self.filedir, seriesname)
                 OUTPUT = OUTPUT.replace(' ', '.')
                 MpdDATA = await self.parsempd(url)
-                keys = []
+                info = self.ini
+                keys = {}
                 is_drm = False
                 if licenseURL!= '':
                     pssh = MpdDATA['pssh']
-                    if pssh!= '':
-                        for x in range(5):
+                    if 2<3:
+                        for psh in info["pssh"]:
 #                            keys = self.getWidevineKeys(pssh, licenseURL)
-                            keys = requests.get(url='https://hls-proxifier-sage.vercel.app/hs',headers={"url":licenseURL,"pssh":pssh}).json()["keys"]
-                            for ke,va in keys.items():
-                                keys = f'{ke}:{va}'
+                            if keys.get(psh):
+                                pass
+                            else:
+                                keys[psh] = requests.get(url='https://subscription-api-hs.vercel.app/hs',headers={"url":licenseURL,"pssh":psh}).json()["keys"]
+  #                          for ke,va in keys.items():
+ #                               keys = f'{ke}:{va}'
                             if keys:
                                 break
                             await asyncio.sleep(5)
                     is_drm = True
                 downloader = Downloader(url, OUTPUT, 'KAIOS', self.xcodec)
                 await downloader.set_data(MpdDATA)
+                await downloader.set_date(info)
                 await self.edit(f'⬇️ **Downloading Episode ...**\n📂 **Filename:** `{spisode_number}-{self.title}`')
                 await downloader.download(video, audios)
                 await self.edit(f'❇️ **Decrypting Episode ...**\n📂 **Filename:** `{spisode_number}-{self.title}`')
                 if is_drm : #or keys == []:
-                    video_path = os.path.join(os.getcwd(), downloader.TempPath, 'jv_drm_video_.mkv')
-                    pssh = self.Get_PSSH(video_path)
+                    video_path = downloader.video_file #os.path.join(os.getcwd(), downloader.TempPath, 'jv_drm_video_.mkv')
+#                    pssh = self.Get_PSSH(video_path)
+ #                   keys = requests.get(url='https://subscription-api-hs.vercel.app/hs',headers={"url":licenseURL,"pssh":pssh}).json()["keys"]
 #                    keys = self.getWidevineKeys(pssh, licenseURL)
                     await downloader.set_key(keys)
                     await downloader.decrypt()
@@ -1078,28 +1162,31 @@ class HotStar:
             self.COUNT_VIDEOS = 1
             print("movie ")
             url, licenseURL, title = self.SINGLE
-            keys = []
+            OUTPUT = os.path.join(self.filedir, title)
+            info = self.ini
+            keys = {}
             is_drm = False
             if licenseURL!= '':
                 pssh = self.MpdDATA['pssh']
-                if pssh!= '':
-                    for x in range(5):
+                if 2<3:
+                    for pss in info["pssh"]:
   #                      keys = self.getWidevineKeys(pssh, licenseURL)
-                        keys = requests.get(url='https://hls-proxifier-sage.vercel.app/hs',headers={"url":licenseURL,"pssh":pssh}).json()["keys"] #api by aryan chaudhary expired for now
-                        for ke,va in keys.items():
-                                keys = f'{ke}:{va}'
+                        keys[pss] = requests.get(url='https://subscription-api-hs.vercel.app/hs',headers={"url":licenseURL,"pssh":pss}).json()["keys"] #api by aryan chaudhary renewed for now
+                   #     for ke,va in keys.items():
+                    #            keys = f'{ke}:{va}'
                         if keys:
                                 print(keys)
-                                break
+#                                break
                 is_drm = True
-            OUTPUT = os.path.join(self.filedir, title)
             downloader = Downloader(url, OUTPUT, 'KAIOS', self.xcodec)
             await downloader.set_data(self.MpdDATA)
+            await downloader.set_date(info)
             await self.edit(f'⬇️ **Downloading ...**\n📂 **Filename:** `{self.title}`')
             await downloader.download(video, audios)
             if is_drm:
-                video_path = os.path.join(os.getcwd(), downloader.TempPath, 'jv_drm_video_.mkv')
-#                pssh = self.Get_PSSH(video_path)
+                video_path = downloader.video_file #os.path.join(os.getcwd(), downloader.TempPath, 'jv_drm_video_.mkv')
+    #            pssh = self.Get_PSSH(video_path)
+     #           keys = requests.get(url='https://subscription-api-hs.vercel.app/hs',headers={"url":licenseURL,"pssh":pssh}).json()["keys"]
  #               keys = self.getWidevineKeys(pssh, licenseURL)
                 await downloader.set_key(keys)
                 await downloader.decrypt()
@@ -1129,7 +1216,9 @@ class Downloader:
         self.log = logging.getLogger(__name__)
         self.downloaded_audios = []
         self.all_data = {}
+        self.__da = None
         self.out_path = out_path
+        self.vid_kid = ''
         if useragent == '':
             self.useragent = 'KAIOS'
         else:  # inserted
@@ -1141,14 +1230,15 @@ class Downloader:
             os.makedirs(self.TempPath)
 
     async def set_key(self, key):
-        self.__key = key
+        self.__keys = key
 
     async def set_data(self, data):
         self.all_data = data
 
     def fix_id_ytdl(self, ytid):
         return ytid.replace('/', '_')
-
+    async def set_date(self, info):
+        self.__da = info
     async def download_url(self, quality, audio_list, custom_header=[]):
         """Download video and all audio streams using direct url"""  # inserted
         if self.all_data:
@@ -1374,6 +1464,7 @@ class Downloader:
       for video in self.all_data['videos']:
         if video['height'] == quality:
             video_format_id = video['id']
+            self.vid_kid = video_format_id.replace('/', '_')
             break
 
       if not video_format_id:
@@ -1383,6 +1474,7 @@ class Downloader:
         for video in self.all_data['videos']:
             if video['height'].lower().startswith(str(nearest_quality)):
                 video_format_id = video['id']
+                self.vid_kid = video_format_id.replace('/', '_')
                 break
 
       if not video_format_id:
@@ -1403,7 +1495,7 @@ class Downloader:
         '--external-downloader', 'ffmpeg',
         '--external-downloader-args', '-loglevel error'
       ]
-      self.video_file = os.path.join(os.getcwd(), self.TempPath, 'jv_drm_video_.mkv').replace(' ', '.')
+      self.video_file = os.path.join(os.getcwd(), self.TempPath, f'jv_drm_video_kid_{self.vid_kid}.mkv').replace(' ', '_')
       video_download_cmd = [
     'yt-dlp',
     '--file-access-retries', '10',
@@ -1434,18 +1526,20 @@ class Downloader:
     # Download audio
       if audio_list:
         for audi in audio_list:
-            my_audio = os.path.join(os.getcwd(), self.TempPath, audi + '_drm.m4a').replace(' ', '.')
+            #my_audio = os.path.join(os.getcwd(), self.TempPath, audi + '_drm.m4a').replace(' ', '.')
             audio_format_id = None
 
             for audio_format in self.all_data['audios']:
                 if audio_format['lang'] == audi:
                     audio_format_id = audio_format['id']
+                    kia = audio_format_id.replace('/', '_')
                     break
 
             if not audio_format_id:
                 for audio_format in self.all_data['audios']:
                     if audio_format['lang'].lower().startswith(audi.split(' ', 1)[0].lower()):
-                        audio_format_id = audio_format['id']
+                        audio_format_id = audio_format['id'].replace('/', '_')
+                        kia = audio_format_id
                         break
 
             if not audio_format_id:
@@ -1460,7 +1554,8 @@ class Downloader:
                         break
                 await self.find_nearest_hi_entry(self.all_data['audios'], lang, bit_v, band)
                 audio_format_id = id
-
+                kia = audio_format_id.replace('/', '_')
+            my_audio = os.path.join(os.getcwd(), self.TempPath, audi + f'_drm_kid_{kia}.m4a').replace(' ', '_')
             audownload_cmd = [
                 'yt-dlp',
                 '--file-access-retries', '10',
@@ -1505,18 +1600,28 @@ class Downloader:
         temp_audios = []
         for my_file in all_files:
             old_path = os.path.join(os.getcwd(), self.TempPath, my_file)
-            old_path = old_path.replace(' ', '.')
+            
+            newkid = old_path.split("_kid_")[1].split(".")[0]
+            ps = self.__da[newkid]['pssh']
+            newkid = self.__da[newkid]['kid']
+            for k, v in self.__keys[ps].items():
+                if k == newkid:
+                    newkey = f"{k}:{v}"
+            old_path = old_path.replace(' ', '_')
+            print("old path")
+            print(old_path)
             new_path = os.path.join(os.getcwd(), self.TempPath, my_file.replace(' ', '_').rsplit('_', 1)[0].rsplit('.', 1)[0].replace('.', '_') + '_jv.mkv')
-            new_path = new_path.replace(' ', '.')
+            new_path = new_path.replace(' ', '_')
             if old_path.upper().endswith(self.VIDEO_SUFFIXES):
                 self.video_file = new_path
             else:  # inserted
                 temp_audios.append(new_path)
             cmd = 'mp4decrypt'
-            cmd += f' --key {str(self.__key)}'
+            cmd += f' --key {newkey}'
             cmd += f' \"{old_path}\" \"{new_path}\"'
             st, stout = await run_comman_d(cmd)
             self.log.info(st + stout)
+            print("decrypt")
             os.remove(old_path)
         self.downloaded_audios = temp_audios
 
@@ -1526,9 +1631,9 @@ class Downloader:
         temp_audios = []
         for my_file in all_files:
             old_path = os.path.join(os.getcwd(), self.TempPath, my_file)
-            old_path = old_path.replace(' ', '.')
+            old_path = old_path.replace(' ', '_')
             new_path = os.path.join(os.getcwd(), self.TempPath, my_file.replace(' ', '_').rsplit('_', 1)[0].rsplit('.', 1)[0].replace('.', '_') + '_jv.mkv')
-            new_path = new_path.replace(' ', '.')
+            new_path = new_path.replace(' ', '_')
             if old_path.upper().endswith(self.VIDEO_SUFFIXES):
                 self.video_file = new_path
             else:  # inserted
@@ -1584,7 +1689,12 @@ class Downloader:
         cmd += f'-c:v copy -c:a copy \"{out_path}\"\n        '
         print(out_path)
         st, stout = await run_comman_d(cmd)
-        
+        for aud_file in self.downloaded_audios:
+            if 2<3:
+                os.remove(aud_file)
+        if 2<3:
+            os.remove(self.video_file)
+
         return 
         data = await self.get_info(out_path)
         print(json.dumps(data))
